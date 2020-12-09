@@ -56,6 +56,7 @@ void bit_clear(char *array, int index) {
   array[index/8] = (b & ~m);
 }
 
+
 void bit_filp(char *array, int index) {
   if(bit_isset(array, index))
     bit_clear(array, index);
@@ -261,13 +262,13 @@ bd_initfree_pair(int k, int bi, int left) {
   // }
   // return free;
   if(bit_isset(bd_sizes[k].alloc, bi / 2)){
-    int larger = (buddy > bi)?buddy:bi;
-    int lesser = (buddy < bi)?buddy:bi;
+    int higher = (buddy > bi)?buddy:bi;
+    int lower = (buddy < bi)?buddy:bi;
     free = BLK_SIZE(k);
     if(left)
-      lst_push(&bd_sizes[k].free, addr(k, larger));
+      lst_push(&bd_sizes[k].free, addr(k, higher));
     else
-      lst_push(&bd_sizes[k].free, addr(k, lesser));
+      lst_push(&bd_sizes[k].free, addr(k, lower));
   }
   return free;
 }
@@ -339,6 +340,7 @@ bd_init(void *base, void *end) {
   for (int k = 0; k < nsizes; k++) {
     lst_init(&bd_sizes[k].free);
     // sz = sizeof(char)* ROUNDUP(NBLK(k), 8)/8;
+    
     sz = sizeof(char)* ROUNDUP(ROUNDUP(NBLK(k), 2) / 2, 8)/8;
     bd_sizes[k].alloc = p;
     memset(bd_sizes[k].alloc, 0, sz);
